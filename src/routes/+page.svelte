@@ -1,99 +1,59 @@
 <script lang="ts">
     import "../app.css";
-    import Cabecalho from "$components/Cabecalho.svelte";
-    import MinhaLista from "$components/MinhaLista.svelte";
-    import Titulo from "$components/Titulo.svelte";
-    import Categoria from "$components/Categoria.svelte";
+    import Titulo from "$components/compartilhados/Titulo.svelte";
+    import Categoria from "$components/paginas/index/Categoria.svelte";
+    import Tag from "$components/compartilhados/Tag.svelte";
+
     import categorias from "$lib/json/categorias.json";
-    import Tag from "$components/Tag.svelte";
-    import Rodape from "$components/Rodape.svelte";
+    import { beforeNavigate } from "$app/navigation";
+    import { minhaLista } from "$lib/stores/minhaLista";
 
-    let minhaLista: string[] = [];
+    $: listaVazia = $minhaLista.length === 0;
 
-    function adicionarIngrediente(evento: CustomEvent<string>) {
-        const ingrediente = evento.detail;
-        minhaLista = [...minhaLista, ingrediente];
-    }
-
-    function removerIngrediente(evento: CustomEvent<string>) {
-        const ingrediente = evento.detail;
-        minhaLista = minhaLista.filter((item) => item !== ingrediente);
-    }
+    beforeNavigate((navigation) => {
+        console.log(navigation)
+        if (listaVazia && navigation.to?.url.pathname == '/receitas') {
+            navigation.cancel();
+        }
+    })
 </script>
 
 <svelte:head>
     <title>Alura Cook</title>
 </svelte:head>
 
-<div class="container-principal">
-    <Cabecalho />
-
-    <div class="estilo-principal">
-        {#if minhaLista.length}
-            <div class="minha-lista-container">
-                <MinhaLista ingredientes={minhaLista} />
-                <div class="divisoria" />
-            </div>
-        {/if}
-
-        <main>
-            <Titulo tag="h1">Ingredientes</Titulo>
-            <div class="info">
-                <p>
-                    Selecione abaixo os ingredientes que você deseja usar nesta
-                    refeição:
-                </p>
-                <p>
-                    *Atenção: consideramos que você tenha em casa sal, pimenta e
-                    água.
-                </p>
-            </div>
-            <ul class="categorias">
-                {#each categorias as categoria (categoria.nome)}
-                    <li>
-                        <Categoria
-                            {categoria}
-                            on:adicionarIngrediente={adicionarIngrediente}
-                            on:removerIngrediente={removerIngrediente}
-                        />
-                    </li>
-                {/each}
-            </ul>
-            <div class="buscar-receitas">
-                <a href="/receitas">
-                    <Tag ativa={true} tamanho="lg">Buscar Receitas</Tag>
-                </a>
-            </div>
-        </main>
+<main>
+    <Titulo tag="h1">Ingredientes</Titulo>
+    <div class="info">
+        <p>
+            Selecione abaixo os ingredientes que você deseja usar nesta
+            refeição:
+        </p>
+        <p>
+            *Atenção: consideramos que você tenha em casa sal, pimenta e água.
+        </p>
     </div>
-
-    <Rodape/>
-</div>
+    <ul class="categorias">
+        {#each categorias as categoria (categoria.nome)}
+            <li>
+                <Categoria
+                    {categoria}
+                />
+            </li>
+        {/each}
+    </ul>
+    <div class="buscar-receitas">
+        <a href="/receitas">
+            <Tag 
+                ativa={true}
+                tamanho="lg"
+                desabilitada={listaVazia}
+            >Buscar Receitas</Tag>
+        </a>
+    </div>
+</main>
 
 <style>
-    .container-principal {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-    }
-
-    .estilo-principal {
-        text-align: center;
-        padding: 0 5vw 3.375rem;
-        flex: 1;
-    }
-
-    .minha-lista-container {
-        margin-bottom: 2rem;
-    }
-
-    .divisoria {
-        width: 40vw;
-        height: 2px;
-        background-color: var(--verde);
-        margin: 0 auto;
-    }
-
     .info {
         margin-bottom: 3.375rem;
     }

@@ -3,22 +3,17 @@
 melhor comportamentos específicos, além de organizar melhor os componentes. -->
 
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-    import Tag from "./Tag.svelte";
-    const dispatch = createEventDispatcher<{
-        adicionarIngrediente: string,
-        removerIngrediente: string
-    }>();
+    import { minhaLista } from "$lib/stores/minhaLista";
+    import Tag from "../../compartilhados/Tag.svelte";
+
     export let ingrediente: string;
-    let selecionado = false;
+    $: selecionado = $minhaLista.includes(ingrediente);
 
     function aoClicar() {
-        selecionado = !selecionado;
-
-        if (selecionado) {
-            dispatch('adicionarIngrediente', ingrediente);
+        if (!selecionado) {
+            minhaLista.addIngrediente(ingrediente);
         } else {
-            dispatch('removerIngrediente', ingrediente);
+            minhaLista.removeIngrediente(ingrediente);
         }
     }
 </script>
@@ -26,7 +21,6 @@ melhor comportamentos específicos, além de organizar melhor os componentes. --
 <button on:click={aoClicar}>
     <Tag ativa={selecionado}>{ingrediente}</Tag>
 </button>
-
 
 <style>
     button {
