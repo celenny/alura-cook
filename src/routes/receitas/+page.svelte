@@ -4,6 +4,7 @@
 
     import receitas from '$lib/json/receitas.json';
     import { minhaLista } from "$lib/stores/minhaLista";
+    import TagLink from "$components/compartilhados/TagLink.svelte";
 
     $: receitasFiltradas = receitas.filter((receita) => (
         receita.ingredientes.every((ingrediente) => ($minhaLista.includes(ingrediente)))
@@ -29,13 +30,19 @@
         {/if}
     </div>
 
-    <ul class="receitas">
-        {#each  receitasFiltradas  as receita (receita.nome)}
-            <li>
-                <Receita {receita}/>
-            </li>
-        {/each}
-    </ul>
+    {#if receitasFiltradas.length}
+        <ul class="receitas">
+            {#each  receitasFiltradas  as receita (receita.nome)}
+                <li>
+                    <Receita {receita}/>
+                </li>
+            {/each}
+        </ul>
+    {/if}
+
+    <div class="editar-lista">
+        <TagLink href="/">Editar lista</TagLink>
+    </div>
 </main>
 
 <style>
@@ -59,5 +66,10 @@
         flex-wrap: wrap;
         justify-content: center;
         gap: 1.5rem;
+    }
+
+    .editar-lista {
+        display: flex;
+        justify-content: center;
     }
 </style>
